@@ -5,7 +5,7 @@ on:
     types: [completed]
     workflows: [CI]
     branches:
-      - master
+      - main
 
 permissions:
   contents: write
@@ -22,19 +22,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      # The given ref should belong to the master branch.
-      # If it's master, it shouldn't be more than 2 commits away (in case another push happened in the meantime).
+      # The given ref should belong to the main branch.
+      # If it's main, it shouldn't be more than 2 commits away (in case another push happened in the meantime).
       # Anything else is invalid.
       - name: Validate ref
         run: |
           ref='${{ github.event.workflow_run.head_branch }}'
           sha='${{ github.event.workflow_run.head_sha }}'
 
-          [ "$ref" == "master" ] &&
-          [ $(git branch --contains=$sha master | wc -l) -eq 1 ] &&
-          [ $(git rev-list --count $sha..master) -le 2 ]
+          [ "$ref" == "main" ] &&
+          [ $(git branch --contains=$sha main | wc -l) -eq 1 ] &&
+          [ $(git rev-list --count $sha..main) -le 2 ]
           if [ $? -ne 0 ]; then
-            echo "::error ::Invalid ref $ref $sha: must be a merge to master branch and not more than 2 commits away"
+            echo "::error ::Invalid ref $ref $sha: must be a merge to main branch and not more than 2 commits away"
             exit 1
           fi
   release:
