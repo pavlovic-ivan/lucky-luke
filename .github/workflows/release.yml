@@ -29,12 +29,19 @@ jobs:
         run: |
           ref='${{ github.event.workflow_run.head_branch }}'
           sha='${{ github.event.workflow_run.head_sha }}'
-
-          [[ $ref =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] &&
+          
+          # Check if it's a valid tag
+          [[ $ref =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?$ ]] &&
           [ $(git tag --points-at $sha | grep -E "^$ref\$" | wc -l) -eq 1 ] &&
-          [ $(git branch --contains=$sha main | wc -l) -eq 1 ]
+          (
+            # Check if it's from main branch
+            [ $(git branch --contains=$sha main | wc -l) -eq 1 ] ||
+            # Or if it's from a patch branch
+            [[ $(git branch --contains=$sha | grep -E "^[[:space:]]*patch/v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+$") ]]
+          )
+          
           if [ $? -ne 0 ]; then
-            echo "::error ::Invalid ref $ref $sha: must be a tag, belong to the main branch and match the semver regex"
+            echo "::error ::Invalid ref $ref $sha: must be a tag, belong to the main branch or a patch branch, and match the semver regex (with optional patch number)"
             exit 1
           fi
   release:
