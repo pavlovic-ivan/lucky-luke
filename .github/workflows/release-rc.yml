@@ -6,6 +6,7 @@ on:
     workflows: [CI]
     branches:
       - main
+      - patch/v*
 
 permissions:
   contents: write
