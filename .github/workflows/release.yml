@@ -30,20 +30,32 @@ jobs:
           ref='${{ github.event.workflow_run.head_branch }}'
           sha='${{ github.event.workflow_run.head_sha }}'
           
-          # Check if it's a valid tag
-          [[ $ref =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?$ ]] &&
-          [ $(git tag --points-at $sha | grep -E "^$ref\$" | wc -l) -eq 1 ] &&
-          (
-            # Check if it's from main branch
-            [ $(git branch --contains=$sha main | wc -l) -eq 1 ] ||
-            # Or if it's from a patch branch
-            [[ $(git branch --contains=$sha | grep -E "^[[:space:]]*patch/v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+$") ]]
-          )
-          
-          if [ $? -ne 0 ]; then
-            echo "::error ::Invalid ref $ref $sha: must be a tag, belong to the main branch or a patch branch, and match the semver regex (with optional patch number)"
+          echo "Validating ref: $ref, sha: $sha"
+
+          # Check if it's a valid tag format
+          if [[ ! $ref =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?$ ]]; then
+            echo "::error::Invalid tag format: $ref"
             exit 1
           fi
+          
+          # Check if the tag points to the current SHA
+          if [ $(git tag --points-at $sha | grep -E "^$ref\$" | wc -l) -ne 1 ]; then
+            echo "::error::Tag $ref does not point to the current SHA $sha"
+            exit 1
+          fi
+          
+          # Fetch all branches to ensure we have the necessary information
+          git fetch --all
+          
+          # Check if it's from main branch or a patch branch
+          if [ $(git branch -r --contains=$sha | grep -E "origin/(main|patch/v[0-9]+\.[0-9]+\.[0-9]+-[0-9]+)$" | wc -l) -eq 0 ]; then
+            echo "::error::$sha is not in main or any patch branch"
+            echo "Branches containing this SHA:"
+            git branch -r --contains=$sha
+            exit 1
+          fi
+          
+          echo "Validation successful"
   release:
     name: "Release"
     needs: validate
