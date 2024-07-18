@@ -70,7 +70,7 @@ jobs:
               echo "Test commit" >> README.md
               git commit -am "Test commit for valid tag"
               git tag v0.0.5 HEAD
-              set_github_env "v1.2.3" \$(git rev-parse HEAD)
+              set_github_env "v0.0.5" \$(git rev-parse HEAD)
               if ! run_script; then
                   echo "Test 'valid tag' failed"
                   return 1
