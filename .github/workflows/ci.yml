@@ -17,4 +17,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Echo
-        run: echo "hello world"
+        run: echo "hello"
