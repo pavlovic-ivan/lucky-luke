@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   validate:
-    if: github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success'
+    if: github.event.workflow_run.event == 'push'
     name: "Validate revision"
     runs-on: ubuntu-22.04
 
