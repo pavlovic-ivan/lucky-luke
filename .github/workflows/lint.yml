@@ -12,7 +12,7 @@ jobs:
     name: Dummy
     runs-on: ubuntu-22.04
     steps:
-      - if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, '^refs/heads/patch/v')) }}
+      - if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/patch/v')) }}
         run: echo "works"
 
   ts-lint:
