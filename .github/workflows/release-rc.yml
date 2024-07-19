@@ -5,7 +5,7 @@ on:
     types: [completed]
     workflows: [CI]
     branches:
-      - main
+      - master
       - patch/v*
 
 permissions:
@@ -23,8 +23,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      # The given ref should belong to the main branch.
-      # If it's main, it shouldn't be more than 2 commits away (in case another push happened in the meantime).
+      # The given ref should belong to the master branch.
+      # If it's master, it shouldn't be more than 2 commits away (in case another push happened in the meantime).
       # Anything else is invalid.
       - name: Validate ref
         run: |
