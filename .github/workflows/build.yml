@@ -5,8 +5,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest-16-cores
-    if: github.repository_owner == 'armadaproject'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
