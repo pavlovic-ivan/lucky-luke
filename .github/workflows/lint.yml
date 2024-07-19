@@ -8,6 +8,13 @@ permissions:
   pull-requests: read
 
 jobs:
+  dummy:
+    name: Dummy
+    runs-on: ubuntu-22.04
+    steps:
+      - if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || matches(github.ref, '^refs/heads/patch/v\d+\.\d+\.\d+-\d+$'))
+        run: echo "works"
+
   ts-lint:
     # TODO(JayF): Determine what nodejs versions we target, and setup matrix-based testing similar to what we do for go
     name: Lint TypeScript
