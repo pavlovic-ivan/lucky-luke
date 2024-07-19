@@ -12,6 +12,12 @@ jobs:
     name: Dummy
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Print JSON
+        run: ${{ toJson(github) }}
+
       - if: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/patch/v')) }}
         run: echo "works"
 
