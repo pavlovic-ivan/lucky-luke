@@ -88,6 +88,7 @@ jobs:
 #          username: "${{ secrets.DOCKERHUB_USER }}"
 #          password: "${{ secrets.DOCKERHUB_PASS }}"
 
+
       - name: Set up Syft
         run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
 
