@@ -23,6 +23,8 @@ jobs:
           fetch-depth: 0
 
 
+
+
       # The given ref should belong to the master branch.
       # If it starts with 'v', it should be a tag, belong to the master branch and match the semver regex.
       # Anything else is invalid.
