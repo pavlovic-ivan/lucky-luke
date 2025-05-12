@@ -73,9 +73,6 @@ runs:
         while [ $attempts -lt $MAX_ATTEMPTS ]; do
           sleep $POLL_INTERVAL
           response=$(curl -sS -H "Authorization: Bearer $TFC_TOKEN" https://app.terraform.io/api/v2/runs/${run_id})
-          echo "--"
-          echo "$response"
-          echo "--"
           status=$(echo "$response" | jq -r '.data.attributes.status')
           echo "Attempt $((attempts+1)): status=$status"
           # Check for terminal or final planning states
@@ -90,6 +87,9 @@ runs:
           echo "Error: failed to retrieve run status."
           exit 1
         fi
+        echo "--"
+        echo "$final_resp"
+        echo "--"
         has_changes=$(echo "$final_resp" | jq -r '.data.attributes.has-changes')
         if [[ "$status" == "errored" ]]; then
           echo "Error: Terraform run errored."
