@@ -86,7 +86,7 @@ runs:
           echo "Error: failed to retrieve run status."
           exit 1
         fi
-        has_changes=$(echo "$final_resp" | jq -r .data.attributes.has-changes)
+        has_changes=$(echo "$final_resp" | jq -r '.data.attributes.has-changes')
         if [[ "$status" == "errored" ]]; then
           echo "Error: Terraform run errored."
           exit 1
