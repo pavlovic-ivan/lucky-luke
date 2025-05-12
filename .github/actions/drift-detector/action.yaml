@@ -83,14 +83,12 @@ runs:
         done
         # Fetch final run details
         final_resp=$(curl -sS -H "Authorization: Bearer $TFC_TOKEN" https://app.terraform.io/api/v2/runs/${run_id})
+        status=$(echo "$final_resp" | jq -r '.data.attributes.status')
         if [ -z "$final_resp" ]; then
           echo "Error: failed to retrieve run status."
           exit 1
         fi
-        echo "--"
-        echo "$final_resp"
-        echo "--"
-        has_changes=$(echo "$final_resp" | jq -r '.data.attributes.has-changes')
+        has_changes=$(echo "$final_resp" | jq -r '.data.attributes.["has-changes"]')
         if [[ "$status" == "errored" ]]; then
           echo "Error: Terraform run errored."
           exit 1
