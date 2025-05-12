@@ -37,7 +37,7 @@ runs:
       run: |
         echo "Starting plan-only run in workspace $WORKSPACE_ID"
         payload=$(cat <<EOF
-            {"data":{"attributes":{"message":"Drift detection plan","plan-only":true,allow-empty-apply: false},"type":"runs","relationships":{"workspace":{"data":{"type":"workspaces","id":"${WORKSPACE_ID}"}}}}}
+            {"data":{"attributes":{"message":"Drift detection plan","plan-only":true,"allow-empty-apply": false},"type":"runs","relationships":{"workspace":{"data":{"type":"workspaces","id":"${WORKSPACE_ID}"}}}}}
         EOF
         )
         response=$(curl -sS -X POST https://app.terraform.io/api/v2/runs \
