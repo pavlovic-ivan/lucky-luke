@@ -11,10 +11,6 @@ inputs:
     description: "Interval in seconds between status polls"
     required: false
     default: "10"
-  max-poll-attempts:
-    description: "Maximum number of polling attempts"
-    required: false
-    default: "30"
 outputs:
   drift:
     description: "Whether drift (changes) were detected (true/false)"
@@ -64,45 +60,39 @@ runs:
       env:
         TFC_TOKEN: ${{ inputs.tfc-token }}
         POLL_INTERVAL: ${{ inputs.polling-interval }}
-        MAX_ATTEMPTS: ${{ inputs.max-poll-attempts }}
         run_id: ${{ steps.create-run.outputs.run-id }}
       run: |
         attempts=0
         status=""
         echo "Polling run status for $run_id"
-        while [ $attempts -lt $MAX_ATTEMPTS ]; do
-          echo "Debug 1"
+        while [[ "$status" != "planned_and_finished" ]]; do
           sleep $POLL_INTERVAL
-          echo "Debug 2"
           response=$(curl -sS -H "Authorization: Bearer $TFC_TOKEN" https://app.terraform.io/api/v2/runs/${run_id})
-          echo "Debug 3"
           status=$(echo "$response" | jq -r '.data.attributes.status')
-          echo "Debug 4"
           echo "Attempt $((attempts+1)): status=$status"
-          echo "Debug 5"
           
           if [[ "$status" == "planned_and_finished" ]] || [[ "$status" == "cost_estimated" ]] || [[ "$status" == "policy_checked" ]] || [[ "$status" == "policy_override" ]] || [[ "$status" == "policy_soft_failed" ]] || [[ "$status" == "errored" ]] || [[ "$status" == "discarded" ]] || [[ "$status" == "canceled" ]] || [[ "$status" == "force_canceled" ]]; then
-            echo "Debug 6"
             break
-            echo "Debug 9"
           fi
-          echo "Debug 7"
+        
           attempts=$((attempts + 1))
-          echo "Debug 8"
         done
-        echo "Polling done"
-        # Fetch final run details
+        
         final_resp=$(curl -sS -H "Authorization: Bearer $TFC_TOKEN" https://app.terraform.io/api/v2/runs/${run_id})
         status=$(echo "$final_resp" | jq -r '.data.attributes.status')
+        
         if [ -z "$final_resp" ]; then
           echo "Error: failed to retrieve run status."
           exit 1
         fi
+        
         has_changes=$(echo "$final_resp" | jq -r '.data.attributes.["has-changes"]')
+        
         if [[ "$status" == "errored" ]]; then
           echo "Error: Terraform run errored."
           exit 1
         fi
+        
         if [[ "$has_changes" == "true" ]]; then
           echo "drift=true" >> $GITHUB_OUTPUT
         else
