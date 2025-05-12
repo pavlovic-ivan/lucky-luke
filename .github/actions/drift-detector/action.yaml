@@ -76,7 +76,7 @@ runs:
           status=$(echo "$response" | jq -r '.data.attributes.status')
           echo "Attempt $((attempts+1)): status=$status"
           # Check for terminal or final planning states
-          if [[ "$status" == "planned_and_finished" ]] || [[ "$status" == "plan_queued" ]] || [[ "$status" == "cost_estimated" ]] || [[ "$status" == "policy_checked" ]] || [[ "$status" == "policy_override" ]] || [[ "$status" == "policy_soft_failed" ]] || [[ "$status" == "errored" ]] || [[ "$status" == "discarded" ]] || [[ "$status" == "canceled" ]] || [[ "$status" == "force_canceled" ]]; then
+          if [[ "$status" == "planned_and_finished" ]] || [[ "$status" == "cost_estimated" ]] || [[ "$status" == "policy_checked" ]] || [[ "$status" == "policy_override" ]] || [[ "$status" == "policy_soft_failed" ]] || [[ "$status" == "errored" ]] || [[ "$status" == "discarded" ]] || [[ "$status" == "canceled" ]] || [[ "$status" == "force_canceled" ]]; then
             break
           fi
           ((attempts++))
