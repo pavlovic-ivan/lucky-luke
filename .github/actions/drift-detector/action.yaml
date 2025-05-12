@@ -80,14 +80,14 @@ runs:
           echo "Debug 4"
           echo "Attempt $((attempts+1)): status=$status"
           echo "Debug 5"
-          # Check for terminal or final planning states
+          
           if [[ "$status" == "planned_and_finished" ]] || [[ "$status" == "cost_estimated" ]] || [[ "$status" == "policy_checked" ]] || [[ "$status" == "policy_override" ]] || [[ "$status" == "policy_soft_failed" ]] || [[ "$status" == "errored" ]] || [[ "$status" == "discarded" ]] || [[ "$status" == "canceled" ]] || [[ "$status" == "force_canceled" ]]; then
             echo "Debug 6"
             break
             echo "Debug 9"
           fi
           echo "Debug 7"
-          ((attempts++))
+          attempts=$((attempts + 1))
           echo "Debug 8"
         done
         echo "Polling done"
