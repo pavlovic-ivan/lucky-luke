@@ -27,3 +27,7 @@ jobs:
           workspace-id: ${{ vars.WORKSPACE_ID }}
           polling-interval: 30
           max-poll-attempts: 10
+
+      - name: Notify about drift via Slack
+#        if: ${{ steps.drift.outputs.drift == 'true' }}
+        run: echo "Has drift ${{ steps.drift.outputs.drift }}"
