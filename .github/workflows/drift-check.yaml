@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: schedule-${{ matrix.environment }}
     strategy:
+      fail-fast: false
       matrix:
         environment: ["dev", "prod"]
 
