@@ -1,6 +1,0 @@
-redis:
-  addrs:
-    - "redis:6379"
-eventsRedis:
-  addrs:
-    - "redis:6379"

@@ -1,1 +1,0 @@
-ALTER TABLE runs ADD COLUMN pool text NOT NULL DEFAULT '';
