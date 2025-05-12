@@ -81,6 +81,7 @@ runs:
           fi
           ((attempts++))
         done
+        echo "Polling done"
         # Fetch final run details
         final_resp=$(curl -sS -H "Authorization: Bearer $TFC_TOKEN" https://app.terraform.io/api/v2/runs/${run_id})
         status=$(echo "$final_resp" | jq -r '.data.attributes.status')
