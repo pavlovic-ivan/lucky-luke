@@ -71,15 +71,24 @@ runs:
         status=""
         echo "Polling run status for $run_id"
         while [ $attempts -lt $MAX_ATTEMPTS ]; do
+          echo "Debug 1"
           sleep $POLL_INTERVAL
+          echo "Debug 2"
           response=$(curl -sS -H "Authorization: Bearer $TFC_TOKEN" https://app.terraform.io/api/v2/runs/${run_id})
+          echo "Debug 3"
           status=$(echo "$response" | jq -r '.data.attributes.status')
+          echo "Debug 4"
           echo "Attempt $((attempts+1)): status=$status"
+          echo "Debug 5"
           # Check for terminal or final planning states
           if [[ "$status" == "planned_and_finished" ]] || [[ "$status" == "cost_estimated" ]] || [[ "$status" == "policy_checked" ]] || [[ "$status" == "policy_override" ]] || [[ "$status" == "policy_soft_failed" ]] || [[ "$status" == "errored" ]] || [[ "$status" == "discarded" ]] || [[ "$status" == "canceled" ]] || [[ "$status" == "force_canceled" ]]; then
+            echo "Debug 6"
             break
+            echo "Debug 9"
           fi
+          echo "Debug 7"
           ((attempts++))
+          echo "Debug 8"
         done
         echo "Polling done"
         # Fetch final run details
