@@ -65,7 +65,7 @@ runs:
         attempts=0
         status=""
         echo "Polling run status for $run_id"
-        while [[ "$status" != "planned_and_finished" ]]; do
+        while :; do
           sleep $POLL_INTERVAL
           response=$(curl -sS -H "Authorization: Bearer $TFC_TOKEN" https://app.terraform.io/api/v2/runs/${run_id})
           status=$(echo "$response" | jq -r '.data.attributes.status')
