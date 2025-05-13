@@ -1,9 +1,8 @@
 name: "Terraform Cloud Drift Check"
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '0 * * * *'
 
 jobs:
   drift-check:
@@ -27,6 +26,11 @@ jobs:
           workspace-id: ${{ vars.WORKSPACE_ID }}
           polling-interval: 30
 
-      - name: Notify about drift via Slack
-#        if: ${{ steps.drift.outputs.drift == 'true' }}
-        run: echo "Has drift ${{ steps.drift.outputs.drift }}"
+      - name: Inspect drift
+        run: |
+          if [[ "${{ steps.drift.outputs.drift }}" == "true" ]]; then
+            echo "Drift detected!"
+            exit 1
+          else
+            echo "No drift detected."
+          fi
