@@ -1,0 +1,24 @@
+name: Promote Imported Configs
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [ master ]
+    paths:
+      - 'importer_tmp_directory/**'
+
+jobs:
+  promote:
+#    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout prod branch
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Debug
+        run: ${{ toJson(github) }}
+
+      - run: |
+          ls -la importer_tmp_directory
