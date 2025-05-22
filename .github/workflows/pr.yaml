@@ -1,24 +1,18 @@
 name: Promote Imported Configs
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [ master ]
-    paths:
-      - 'importer_tmp_directory/**'
-
+  workflow_dispatch:
+    inputs:
+      owner:
+        type: choice
+        description: 'Owner of the repository'
+        options:
+          - "G-Research"
+          - "armadaproject"
+          - "gr-oss-devops"
 jobs:
   promote:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout prod branch
-        uses: actions/checkout@v4
-        with:
-          ref: master
-
       - name: Debug
-        run: ${{ toJson(github) }}
-
-      - run: |
-          ls -la importer_tmp_directory
+        run: ${{ github.event.inputs.owner }}
