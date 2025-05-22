@@ -13,6 +13,10 @@ on:
 jobs:
   promote:
     runs-on: ubuntu-latest
+    environment: promote-${{ github.ref_name }}-${{ github.event.inputs.owner }}
     steps:
       - name: Debug
         run: echo "${{ github.event.inputs.owner }}"
+
+      - name: Echo message
+        run: echo "${{ vars.MESSAGE }}"
