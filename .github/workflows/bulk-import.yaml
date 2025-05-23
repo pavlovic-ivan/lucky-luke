@@ -1,0 +1,65 @@
+name: Bulk import repos pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      owner:
+        type: choice
+        description: 'The owner of the repository to import'
+        options:
+          - "G-Research"
+          - "armadaproject"
+          - "gr-oss-devops"
+
+jobs:
+  bulk-import-repos:
+    runs-on: ubuntu-latest
+    name: Bulk import repos
+    environment: import-${{ github.ref_name }}-${{ github.event.inputs.owner }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Just
+        uses: extractions/setup-just@v2
+        with:
+          just-version: '1.4.0'
+
+      - name: Generate a token
+        uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.event.inputs.owner }}
+
+      - name: Setup vars
+        id: setup-vars
+        run: |
+          date_suffix=$(date +%Y%m%d)
+          echo "automation_branch_name=import/${{ github.ref_name }}/${{ github.event.inputs.owner }}/bulk-import/$date_suffix" >> $GITHUB_OUTPUT
+
+      - name: Bulk import repos
+        working-directory: feature/github-repo-importer
+        run: just import-repos
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          OWNER: ${{ github.event.inputs.owner }}
+
+      - name: Handle configuration files
+        uses: ./.github/actions/compare
+        with:
+          working-directory: feature/github-repo-importer
+          source-directory: "../github-repo-provisioning/importer_tmp_dir/"
+          target-directory: "../github-repo-provisioning/repo_configs/${{ github.ref_name }}/${{ github.event.inputs.owner }}"
+
+      - name: Create Pull Request
+        uses: ./.github/actions/pr-bot
+        with:
+          branch-name: ${{ steps.setup-vars.outputs.automation_branch_name }}
+          pr-title: "Bulk import repos"
+          commit-message: "Auto-generated changes. Bulk import repos"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
