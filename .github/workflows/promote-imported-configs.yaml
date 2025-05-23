@@ -11,57 +11,6 @@ jobs:
   promote:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-#    environment: promote-${{ github.ref_name }}
-    # TODO: 'owner' input here would be a part of selected environment. impact: change env name and reset vars and secrets
-    # TODO: remove 'owner' from environment variables. impact: replace ${{ vars.OWNER }} with ${{ github.event.inputs.owner }}
-    # TODO: maybe add a matrix with multiple owners, and branches and see how to limit it to ${{ github.ref_name }}
-    permissions:
-      contents: write
     steps:
       - name: Debug
         run: echo ${{ toJson(github) }}
-#      - name: Generate a token
-#        uses: actions/create-github-app-token@v2
-#        id: generate-token
-#        with:
-#          app-id: ${{ vars.APP_ID }}
-#          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-#          owner: ${{ vars.OWNER }} # TODO: replace
-#
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#        with:
-#          token: ${{ steps.generate-token.outputs.token }}
-#          ref: ${{ github.ref_name }}
-#
-#      - name: Sanitize config files
-#        working-directory: feature/github-repo-provisioning
-#        run: |
-#          for file in "importer_tmp_dir"/*.yaml; do
-#            if [[ -f "$file" ]]; then
-#              echo "Processing file: $file"
-#              # here the $file is dir/filename.yaml
-#              yq '. |= ( with(select(.rulesets[] != null); .rulesets[] |= del(.id)) | with(select(.rulesets[] == null); .) )' -i $file
-#            fi
-#          done
-#
-#      - name: Promote imported configs
-#        working-directory: feature/github-repo-provisioning
-#        env:
-#            ENVIRONMENT_DIRECTORY: ${{ github.ref_name }}
-#            ORG: ${{ vars.OWNER }} # TODO: replace
-#        run: |
-#          find importer_tmp_dir -maxdepth 1 -type f \( -name "*.yaml" -o -name ".*.yaml" \) -print -exec mv {} "repo_configs/"$ENVIRONMENT_DIRECTORY"/"$ORG"" \;
-#
-#      - name: Configure git
-#        shell: bash
-#        run: |
-#          git config --global user.name 'github-actions[bot]'
-#          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-#
-#      - name: Commit files
-#        # TODO: probably add a date to the commit message
-#        run: |
-#          git add .
-#          git commit -m "[bot] Promote imported configs from ${{ github.event.pull_request.ref_name }}"
-#          git push origin ${{ github.ref_name }}
