@@ -5,7 +5,7 @@ on:
     types: [closed]
     branches: [ prod, dev ]
     paths:
-      - 'importer_tmp_directory/**'
+      - 'feature/github-repo-provisioning/importer_tmp_directory/**'
 
 jobs:
   promote:
