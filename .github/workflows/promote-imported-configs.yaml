@@ -13,4 +13,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Debug
-        run: echo ${{ toJson(github) }}
+        run: echo ${{ toJSON(github) }}
