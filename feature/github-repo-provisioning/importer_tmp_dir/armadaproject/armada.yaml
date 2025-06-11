@@ -1,0 +1,132 @@
+description: A multi-cluster batch queuing system for high-throughput workloads on Kubernetes.
+visibility: public
+homepage_url: https://armadaproject.io
+default_branch: master
+has_issues: true
+has_projects: true
+has_wiki: true
+has_downloads: true
+allow_merge_commit: false
+allow_rebase_merge: false
+allow_squash_merge: true
+allow_auto_merge: true
+allow_update_branch: false
+squash_merge_commit_title: PR_TITLE
+squash_merge_commit_message: PR_BODY
+merge_commit_title: MERGE_MESSAGE
+merge_commit_message: PR_TITLE
+web_commit_signoff_required: false
+delete_branch_on_merge: true
+is_template: false
+archived: false
+has_discussions: true
+topics:
+    - gr-oss
+    - kubernetes
+pull_collaborators:
+    - rochaporto
+    - lukasheinrich
+    - strigazi
+    - tghartland
+    - dans77777
+push_collaborators:
+    - GeorgeJahad
+    - owenthomas17
+    - jankaspar
+    - d80tb7
+    - c-rindi
+    - arashid290
+    - mauriceyap
+    - Kotwic4
+    - theAntiYeti
+    - sudiptob2
+    - GROpenSourceRO
+    - robertdavidsmith
+    - Mo-Fatah
+    - zuqq
+    - EnricoMi
+    - eleanorpratt
+admin_collaborators:
+    - pavlovic-ivan
+pages:
+    cname: armadaproject.io
+    branch: gh-pages
+    path: /
+    build_type: legacy
+rulesets:
+    - id: 44763
+      enforcement: active
+      name: Limit sendToGitHub branch creation to sync service
+      rules:
+        creation: true
+        non_fast_forward: true
+      target: branch
+      bypass_actors:
+        - actor_id: 8182654
+          actor_type: Team
+          bypass_mode: always
+      conditions:
+        ref_name:
+            include:
+                - refs/heads/sendToGitHub/**/*
+      repository: armadaproject/armada
+vulnerability_alerts_enabled: true
+branch_protections_v4:
+    - pattern: master
+      allows_deletions: false
+      allows_force_pushes: false
+      blocks_creations: false
+      enforce_admins: true
+      require_conversation_resolution: false
+      require_signed_commits: false
+      required_linear_history: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: false
+        restrict_dismissals: false
+        require_last_push_approval: true
+      required_status_checks:
+        strict: true
+        contexts:
+            - 'Rule: Require approval from Armada maintainers (post_check)'
+            - All jobs succeeded
+      restricts_pushes: false
+      lock_branch: false
+    - pattern: gh-pages
+      allows_deletions: false
+      allows_force_pushes: false
+      blocks_creations: false
+      enforce_admins: false
+      require_conversation_resolution: false
+      require_signed_commits: false
+      required_linear_history: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: false
+        require_code_owner_reviews: false
+        restrict_dismissals: false
+        require_last_push_approval: false
+      restricts_pushes: false
+      lock_branch: false
+    - pattern: patch/v*
+      allows_deletions: false
+      allows_force_pushes: false
+      blocks_creations: false
+      enforce_admins: true
+      require_conversation_resolution: false
+      require_signed_commits: false
+      required_linear_history: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: false
+        restrict_dismissals: false
+        require_last_push_approval: true
+      required_status_checks:
+        strict: true
+        contexts:
+            - 'Rule: Require approval from Armada maintainers (post_check)'
+            - All jobs succeeded
+      restricts_pushes: false
+      lock_branch: false

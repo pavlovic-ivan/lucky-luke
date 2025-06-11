@@ -1,0 +1,28 @@
+clean:
+    rm -rf .terraform .terraform.lock.hcl terraform.tfstate terraform.tfstate.backup
+
+init:
+    terraform init
+
+lw:
+    terraform workspace list
+
+sw wName:
+    #!/usr/bin/env bash
+    cw=$(terraform workspace show)
+    read -p "Current workspace: [$cw]. Switching to [{{wName}}]? [y/n]" ans
+    if [ "$ans" = "y" ]; then
+      terraform workspace select {{wName}}
+    else
+      echo "Aborting..."
+    fi
+
+plan:
+    #!/usr/bin/env bash
+    cw=$(terraform workspace show)
+    read -p "Current workspace: [$cw]. Proceed with plan? [y/n]" ans
+    if [ "$ans" = "y" ]; then
+        terraform plan -var-file=terraform.tfstate.d/$cw/terraform.tfvars -out=tfplan.out
+    else
+        echo "Aborting..."
+    fi

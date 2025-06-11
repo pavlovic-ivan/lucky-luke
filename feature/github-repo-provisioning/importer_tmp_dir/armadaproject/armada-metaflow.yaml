@@ -1,0 +1,42 @@
+visibility: public
+default_branch: main
+has_issues: true
+has_projects: true
+has_wiki: true
+has_downloads: true
+allow_merge_commit: true
+allow_rebase_merge: true
+allow_squash_merge: true
+allow_auto_merge: false
+allow_update_branch: false
+squash_merge_commit_title: COMMIT_OR_PR_TITLE
+squash_merge_commit_message: COMMIT_MESSAGES
+merge_commit_title: MERGE_MESSAGE
+merge_commit_message: PR_TITLE
+web_commit_signoff_required: false
+delete_branch_on_merge: false
+is_template: false
+archived: false
+has_discussions: false
+push_collaborators:
+    - ClifHouck
+vulnerability_alerts_enabled: true
+branch_protections_v4:
+    - pattern: main
+      allows_deletions: false
+      allows_force_pushes: false
+      blocks_creations: false
+      enforce_admins: true
+      require_conversation_resolution: false
+      require_signed_commits: false
+      required_linear_history: false
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: false
+        restrict_dismissals: false
+        require_last_push_approval: true
+      required_status_checks:
+        strict: true
+      restricts_pushes: false
+      lock_branch: false
