@@ -64,7 +64,7 @@ jobs:
 
       - name: Trigger import workflow
         run: |
-          gh workflow run import.yml \
+          gh workflow run import.yaml \
             --repo "${{ github.repository }}" \
             --field repo_name="${{ steps.parse-upstream.outputs.fork_name }}" \
             --field owner="${{ github.event.inputs.fork_to_org }}" \
