@@ -1,0 +1,25 @@
+# List of repositories to be ignored by the importer.
+#
+# The importer will not import the repositories listed here.
+# The list is a list of repository names in the format "owner/repo".
+# The list should be set if selected_repos is not.
+ignored_repos:
+  - "G-Research/github-configuration-self-service"
+  - "G-Research/davidl-userns-notes" # Ignoring this one because of weird setup (private fork, no rulesets, 403 status when fetching rulesets)
+
+# List of repositories to be imported by the importer.
+#
+# The importer will only import the repositories listed here.
+# The list is a list of repository names in the format "owner/repo".
+# The list should be set if ignored_repos is not.
+#selected_repos: []
+
+# Set to true if the repositories imported should be only public repositories
+#
+# If not set, both public and private repositories will be imported.
+#is_public: true
+
+# Configurable page size for the GitHub API list repos call.
+#
+# The default page size is 100.
+#page_size: 100

@@ -5,16 +5,13 @@ on:
     types: [closed]
     branches: [ prod, dev ]
     paths:
-      - 'importer_tmp_directory/**'
+      - 'feature/github-repo-provisioning/importer_tmp_dir/**'
 
 jobs:
   promote:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    environment: promote-${{ github.ref_name }}
-    # TODO: 'owner' input here would be a part of selected environment. impact: change env name and reset vars and secrets
-    # TODO: remove 'owner' from environment variables. impact: replace ${{ vars.OWNER }} with ${{ github.event.inputs.owner }}
-    # TODO: maybe add a matrix with multiple owners, and branches and see how to limit it to ${{ github.ref_name }}
+    environment: promote
     permissions:
       contents: write
     steps:
@@ -24,32 +21,13 @@ jobs:
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          owner: ${{ vars.OWNER }} # TODO: replace
+          owner: "G-Research"
 
       - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          ref: ${{ github.ref_name }}
-
-      - name: Sanitize config files
-        working-directory: feature/github-repo-provisioning
-        run: |
-          for file in "importer_tmp_dir"/*.yaml; do
-            if [[ -f "$file" ]]; then
-              echo "Processing file: $file"
-              # here the $file is dir/filename.yaml
-              yq '. |= ( with(select(.rulesets[] != null); .rulesets[] |= del(.id)) | with(select(.rulesets[] == null); .) )' -i $file
-            fi
-          done
-
-      - name: Promote imported configs
-        working-directory: feature/github-repo-provisioning
-        env:
-            ENVIRONMENT_DIRECTORY: ${{ github.ref_name }}
-            ORG: ${{ vars.OWNER }} # TODO: replace
-        run: |
-          find importer_tmp_dir -maxdepth 1 -type f \( -name "*.yaml" -o -name ".*.yaml" \) -print -exec mv {} "repo_configs/"$ENVIRONMENT_DIRECTORY"/"$ORG"" \;
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
 
       - name: Configure git
         shell: bash
@@ -57,9 +35,44 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Commit files
-        # TODO: probably add a date to the commit message
+      - name: Promote Sanitized Files
+        working-directory: feature/github-repo-provisioning
+        env:
+          DEV_TARGETS: 'gr-oss-devops'
+          PROD_TARGETS: 'G-Research armadaproject'
         run: |
-          git add .
-          git commit -m "[bot] Promote imported configs from ${{ github.event.pull_request.ref_name }}"
-          git push origin ${{ github.ref_name }}
+          if [[ "${{ github.ref_name }}" == "dev" ]]; then
+            IFS=' ' read -r -a targets <<< "${DEV_TARGETS}"
+            target_env="dev"
+          elif [[ "${{ github.ref_name }}" == "prod" ]]; then
+            IFS=' ' read -r -a targets <<< "${PROD_TARGETS}"
+            target_env="prod"
+          else
+            echo "Unsupported branch: ${{ github.ref_name }}"
+            exit 1
+          fi
+
+          for org in "${targets[@]}"; do
+            src="importer_tmp_dir/${org}"
+            dst="repo_configs/${target_env}/${org}"
+          
+            if [[ -d "$src" ]]; then
+              echo "Promoting configs from $src to $dst"
+              mkdir -p "$dst"
+          
+              find "$src" -type f -name '*.yaml' | while read file; do
+                yq '. |= ( with(select(.rulesets[] != null); .rulesets[] |= del(.id)) | with(select(.rulesets[] == null); .) )' -i $file
+              done
+
+              find "$src" -maxdepth 1 -type f \( -name "*.yaml" -o -name ".*.yaml" \) -print -exec mv {} "$dst" \;
+              git add "$src" "$dst"
+            else
+              echo "Source dir $src not found, skipping"
+            fi
+          done
+
+          git diff --cached --quiet || {
+            date_suffix=$(date +%Y-%m-%d)
+            git commit -m "Promote configs from PR #${{ github.event.pull_request.number }} on $date_suffix"
+            git push origin "${{ github.ref_name }}"
+          }
